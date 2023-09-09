@@ -7,6 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <title>Srengine</title>
       <body>{children}</body>
     </html>
   );
