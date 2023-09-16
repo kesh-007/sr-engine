@@ -1,18 +1,73 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import {FC} from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { data } from '@/app/components/data';
 import { absent } from '@/app/components/absent';
 import { HeaderComponent } from '@/app/components/header';
+import { DataTableDemo } from '@/app/components/table';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Button } from '@ui/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@ui/components/ui/dialog"
 
 
-interface pageProps {
-  params:{test:string}
-}
 
 const page = ({params}) => {
+
+  const departmentCounts = {};
+
+data.forEach((person) => {
+  const department = person["Branch"];
+  if (departmentCounts[department]) {
+    departmentCounts[department]++;
+  } else {
+    departmentCounts[department] = 1;
+  }
+});
+
+// Convert the department counts into the desired format
+const departmentData = Object.keys(departmentCounts).map((department) => ({
+  name: department,
+  dept: departmentCounts[department],
+}));
+
+const departmentaCounts = {};
+
+// Loop through the data and count the persons in each department
+absent.forEach((person) => {
+  const department = person["Branch"];
+  if (departmentCounts[department])
+ { if (departmentaCounts[department]) {
+    departmentaCounts[department]++;
+  } else {
+    departmentaCounts[department] = 1;
+  }}
+});
+
+// Convert the department counts into the desired format
+const departmentaData = Object.keys(departmentaCounts).map((department) => ({
+  name: department,
+  dept: departmentaCounts[department],
+}));
+const mergedData = Object.keys(departmentaCounts).map((department)=>({
+  name:department,
+  present:departmentCounts[department],
+  absent:departmentaCounts[department],
+}))
+
+
+
+
+  
   const generatePDF = () => {
     
     const doc = new jsPDF('landscape');
@@ -40,7 +95,7 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
   const branchAbsentData = absent.filter((item) => item["Branch"] === branch);
 
   // Add a heading and subheading for the branch
-  addHeading(`Branch: ${branch}`, 'Some description or date');
+  addHeading(`Branch: ${branch}`,  `Present: ${branchData.length}`);
 
   // Define the table columns
   const columns = [
@@ -87,7 +142,7 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
   yOffset += mainTableHeight + 20; // Add extra space between tables
 
   // Add a heading for the "Absent" table
-  addHeading(`Absent - Branch: ${branch}`, 'Some description or date');
+  addHeading(`Absent - Branch: ${branch}`, `Absent: ${branchAbsentData.length}`);
 
   // Define the table columns for the "Absent" table
   const absentColumns = [
@@ -99,24 +154,21 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
     "Solved Count",
     "Total Submissions",
 
-    // Add other column headers...
   ];
 
-  // Convert branch-specific absentData into an array of arrays
   const absentTableData = branchAbsentData.map((item, index) => {
     return [
-      index + 1, // Number column
+      index + 1, 
       
       item["Name"],
       item["Regn Num"],
       item["Branch"],
       item["Solved Count"],
       item["Total Submissions"],
-      // Add other fields as needed...
+
     ];
   });
 
-  // Generate the "Absent" table using JSPDF AutoTable
   //@ts-ignore
   doc.autoTable({
     head: [absentColumns], // Table header
@@ -130,12 +182,20 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
 }
 
 // Save or display the PDF
-doc.save('customized_table.pdf');
+doc.save('results.pdf');
 
     };
+    const[name,setname] = useState('')
+    const[show,setshow] = useState(false)
+    function ViewDetails(name:string)
+    {
+      setname(name)
+      setshow(true)
+
+    }
 
   return (
-    <div> 
+    <div className='overflow-hidden max-md:overflow-scroll'> 
               <title>Summary || SR Engine</title>
         <div className='flex justify-between p-4'>
         <p className='text-2xl poppins-text font-bold'>
@@ -150,22 +210,127 @@ doc.save('customized_table.pdf');
         <p></p>
         </div>
 <div className='p-4'>
-  <div className='flex justify-between'>
-    <p>Graph overall performance</p>
-    <p>Top performers of the test with select option</p>
+  <div className='flex justify-between max-md:flex-col'>
+    <div className='flex flex-col'>
+      <p className='mb-2 font-bold text-xl'>
+        dailytest-03-07-23(CSE,IT,AIDS)2025
+        <Button onClick={generatePDF} variant='outline' className='ml-1'>
+          Export
+          </Button>
+        </p>
+    <BarChart width={730} height={250} data={departmentData} className='max-md:hidden'>
+  <CartesianGrid strokeDasharray="3 3" />
+  <XAxis dataKey="name" />
+  <YAxis />
+  <Tooltip />
+  <Legend />
+  <Bar dataKey="dept" fill="#8884d8" />
+</BarChart>
+<h1 className='font-bold text-xl '>Absent List</h1>
+<BarChart width={730} height={250} data={departmentaData} className='max-md:hidden'>
+  <CartesianGrid strokeDasharray="3 3" />
+  <XAxis dataKey="name" />
+  <YAxis />
+  <Tooltip />
+  <Legend />
+  <Bar dataKey="dept" fill="#FF6263" />
+</BarChart>
+
+</div>
+      <div className='flex flex-col'>
+        <p className='mb-2 font-bold text-xl'>Top Performers</p>
+    <table className=" divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              #
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Name
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Branch
+            </th>
+            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Section
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {data.slice(0, 5).map((datum, index) => (
+            <tr key={index}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Name}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Branch}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum['Batch/Section']}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
   </div>
   <div className='mt-4'>
-    <select>
-      <option>Depts</option>
-    </select>
-    <p>Table of results</p>
-    <p>Table of absentence</p>
+
+    
+     <table className=" w-full bg-gray-50">
+        <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="px-6 py-3 text-left  font-medium text-gray-500 uppercase tracking-wider">
+              Number
+            </th>
+            <th scope="col" className="px-6 py-3 text-left  font-medium text-gray-500 uppercase tracking-wider">
+              Department
+            </th>
+            <th scope="col" className="px-6 py-3 text-left  font-medium text-gray-500 uppercase tracking-wider">
+              Present
+              
+            </th>
+            <th scope="col" className="px-6 py-3 text-left  font-medium text-gray-500 uppercase tracking-wider">
+              Absent
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {mergedData.map((datum, index) => (
+            <tr key={index}>
+              <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+              <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.name}</td>
+              <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.present}</td>
+              <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.absent}</td>
+              <div className='flex justify-center items-center'>
+              <Button variant='outline' className='mt-4' onClick={()=>ViewDetails(datum.name)}>View</Button>
+              </div>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+   
+    {show && <DialogDemo dept={name}/>}
   </div>
   </div>
 
     </div>
   )
 }
+
+export function DialogDemo(props) {
+  const result = data.filter((item)=>item.Branch===props.dept)
+  const absents = absent.filter((item)=>item.Branch===props.dept)
+  return (
+    <div>
+    <h1 className='text-2xl font-bold'>Department {props.dept}</h1>
+    <h1>Attended {result.length}</h1>
+      
+            <DataTableDemo data={result}/>
+            <h1 className='text-xl font-bold'>Absent List {absents.length}</h1>
+            <DataTableDemo data={absents}/>
+    </div>
+       
+  )
+}
+
+
+
 
 export default page
