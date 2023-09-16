@@ -21,7 +21,7 @@ import {
 
 
 
-const page = ({params}) => {
+const Page = () => {
 
   const departmentCounts = {};
 
@@ -314,7 +314,12 @@ doc.save('results.pdf');
   )
 }
 
-export function DialogDemo(props) {
+interface DialogDemoProps {
+  dept: string; // Specify the type for the 'dept' prop
+}
+
+
+ function DialogDemo(props:DialogDemoProps) {
   const result = data.filter((item)=>item.Branch===props.dept)
   const absents = absent.filter((item)=>item.Branch===props.dept)
   return (
@@ -333,4 +338,4 @@ export function DialogDemo(props) {
 
 
 
-export default page
+export default Page

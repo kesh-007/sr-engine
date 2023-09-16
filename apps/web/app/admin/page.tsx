@@ -3,7 +3,7 @@ import React from 'react'
 import { HeaderComponent } from '../components/header'
 import TimeLine from '../components/VerticalTimeline'
 
-const page = () => {
+const Page = () => {
   return (
     <div>
         <title>Dashboard || SR Engine</title>
@@ -27,4 +27,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

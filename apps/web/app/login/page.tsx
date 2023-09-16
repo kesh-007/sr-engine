@@ -1,10 +1,7 @@
 "use client"
-import { Metadata } from "next"
 import React,{useState} from 'react'
-import Image from "next/image"
 import Link from "next/link"
 
-import { cn } from "@ui/lib/utils"
 import { Button, buttonVariants } from "@ui/components/ui/button"
 import { signIn } from 'next-auth/react';
 
@@ -19,7 +16,6 @@ import {
 import { Checkbox } from "@ui/components/ui/checkbox"
 import { Input } from "@ui/components/ui/input"
 import { Label } from "@ui/components/ui/label"
-import { useRouter } from "next/router"
 
 
 export default function AuthenticationPage() {
@@ -77,7 +73,7 @@ const handleLogin = async (e) => {
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2">
               <p className="text-lg">
-                &ldquo;Streamline your workflow with our result automation platform&rdquo;
+              Streamline your workflow with our result automation platform
               </p>
             </blockquote>
           </div>
@@ -117,7 +113,7 @@ const handleLogin = async (e) => {
                   <Button className="w-full" onClick={handleLogin}>Login</Button>
                   <p className="mt-2 text-xs text-center text-gray-700">
                     {" "}
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <span className=" text-blue-600 hover:underline">
                       Sign up
                     </span>
@@ -141,7 +137,7 @@ const handleLogin = async (e) => {
               >
                 Privacy Policy
               </Link>
-              .
+              
             </p>
           </div>
         </div>
