@@ -21,10 +21,6 @@ import { Input } from "@ui/components/ui/input"
 import { Label } from "@ui/components/ui/label"
 import { useRouter } from "next/router"
 
-export const metadata: Metadata = {
-  title: "Authentication",
-  description: "Authentication forms built using the components.",
-}
 
 export default function AuthenticationPage() {
    // const router = useRouter()
