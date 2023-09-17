@@ -16,36 +16,38 @@ import {
 import { Checkbox } from "@ui/components/ui/checkbox"
 import { Input } from "@ui/components/ui/input"
 import { Label } from "@ui/components/ui/label"
+import {useRouter} from 'next/navigation'
 
 
 export default function AuthenticationPage() {
-   // const router = useRouter()
+    const router = useRouter()
     const [email,setemail] = useState('')
 const [password,setpassword] = useState('')
 const[iserror,seterror] = useState(false)
+const[loading,setisloading] = useState(false)
 const handleLogin = async (e) => {
+  setisloading(true)
     seterror(false)
     
     e.preventDefault();
     const result = await signIn('credentials', {
       email: email,
       password: password,
-      redirect: true,
+      redirect: false,
       callbackUrl: "/admin",
 
     });
-    console.log("\n\n result",result)
 
     if (!result.error) {
-        //router.push('/admin')
+        router.push('/admin')
         
       // Handle successful login, e.g., redirect to dashboard
     } else {
       // Handle login error
       console.error(result.error);
-      alert("error da")
       seterror(true)
     }
+    setisloading(false)
   };
 
   return (
@@ -86,7 +88,6 @@ const handleLogin = async (e) => {
                     Sign in
                   </CardTitle>
                   <CardDescription className="text-center">
-                    {iserror && <h1 className="bg-red-500 text-white px-2">Email password mismatch</h1>}
                     Enter your email and password to login
                   </CardDescription>
                 </CardHeader>
@@ -110,7 +111,11 @@ const handleLogin = async (e) => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col">
-                  <Button className="w-full" onClick={handleLogin}>Login</Button>
+                    <Button className="w-full" onClick={handleLogin}>
+                      {loading?'loading...':'Login'}
+                    </Button>
+                  {iserror &&<ErrorMessage/>  }
+
                   <p className="mt-2 text-xs text-center text-gray-700">
                     {" "}
                     Don&apos;t have an account?{" "}
@@ -145,3 +150,14 @@ const handleLogin = async (e) => {
     </>
   )
 }
+
+const ErrorMessage = () => {
+  return (
+    <div className="bg-red-100 border mt-3 border-red-400 text-red-700 px-4 py-2 rounded relative" role="alert">
+      <strong className="font-bold ">Authentication Failed: </strong>
+      
+      <span className="block sm:inline">Invalid email and password</span>
+    </div>
+  );
+};
+

@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -13,9 +13,13 @@ import {
 import { Input } from '@ui/components/ui/input';
 import { useToast } from '@ui/components/ui/use-toast';
 import { HeaderComponent } from '../components/header';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
+  const router = useRouter();
   const { toast } = useToast();
+  const {data} = useSession()
 
   const FormSchema = z.object({
     test_name: z.string().min(2, {
@@ -37,6 +41,13 @@ const Page = () => {
       action: <ToastAction altText="Goto schedule to undo">Exit</ToastAction>,
     });
   }
+  useEffect(()=>{
+    if (!data)
+    {
+      router.push('/login')
+      
+    }
+  },[data])
 
   return (
     <div>

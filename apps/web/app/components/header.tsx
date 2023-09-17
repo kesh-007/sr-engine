@@ -16,40 +16,29 @@ import {
 
 const components: { title: string; href: string; description: string }[] = [
   {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
+    title: "Profile",
+    href: "/admin/profile",
     description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
+      "",
   },
   {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
+    title: "Compare Tests",
+    href: "/admin/compare",
     description:
-      "For sighted users to preview content available behind a link.",
+      "",
   },
   {
     title: "Progress",
-    href: "/docs/primitives/progress",
+    href: "/admin/progress",
     description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
+      "Displays the progress of a indivual student.",
   },
   {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
+    title: "Upload",
+    href: "/upload",
+    description: "Upload the details of the test",
   },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
+ 
 ]
 
 export function HeaderComponent() {
@@ -63,7 +52,7 @@ export function HeaderComponent() {
             </NavigationMenuLink>
           </Link>          </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Manage</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
               {components.map((component) => (
@@ -79,9 +68,9 @@ export function HeaderComponent() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/upload" legacyBehavior passHref>
+          <Link href="/login" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Upload
+              Logout
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
