@@ -13,6 +13,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@ui/components/ui/navigation-menu"
+import { signOut } from "next-auth/react"
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -68,11 +69,11 @@ export function HeaderComponent() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/login" legacyBehavior passHref>
+          <div  onClick={()=>signOut()} className="cursor-pointer" >
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Logout
             </NavigationMenuLink>
-          </Link>
+          </div>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

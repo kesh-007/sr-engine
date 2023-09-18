@@ -13,17 +13,22 @@ const   authOptions = {
         const { email, password } = credentials;
 
         if (email && password==='changeme') {
-          return Promise.resolve({ id: 1, name: "User" });
+          return Promise.resolve({ id: 1, name: email });
         } else {
           return Promise.resolve(null);
         }
       }
     })
   ],
-  secret: "YourSecretKeyHere" ,
+  
   pages: {
     signIn: '/login', 
+    error:'/login',
+    signOut:'/login'
+
   },
+secret: process.env.NEXTAUTH_SECRET ,
+
 
   
 };

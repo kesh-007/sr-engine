@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 const Page = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const {data} = useSession()
+  const { data: session } = useSession()
 
   const FormSchema = z.object({
     test_name: z.string().min(2, {
@@ -41,13 +41,6 @@ const Page = () => {
       action: <ToastAction altText="Goto schedule to undo">Exit</ToastAction>,
     });
   }
-  useEffect(()=>{
-    if (!data)
-    {
-      router.push('/login')
-      
-    }
-  },[data])
 
   return (
     <div>
@@ -61,6 +54,8 @@ const Page = () => {
           />
         </p>
         <HeaderComponent />
+        {/* {JSON.stringify(session)} */}
+        {session.user.name}
         <p></p>
       </div>
       <h1 className="text-2xl font-bold py-3 px-2">Details of the test</h1>

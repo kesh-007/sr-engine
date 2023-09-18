@@ -1,5 +1,5 @@
 "use client"
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import Link from "next/link"
 
 import { Button, buttonVariants } from "@ui/components/ui/button"
@@ -17,10 +17,19 @@ import { Checkbox } from "@ui/components/ui/checkbox"
 import { Input } from "@ui/components/ui/input"
 import { Label } from "@ui/components/ui/label"
 import {useRouter} from 'next/navigation'
+import { useSession } from "next-auth/react"
 
 
 export default function AuthenticationPage() {
     const router = useRouter()
+    const { data: session, status } = useSession()
+    useEffect(()=>{
+      if (status === "authenticated") {
+        router.push('/admin')
+      }
+    
+    },[status])
+  
     const [email,setemail] = useState('')
 const [password,setpassword] = useState('')
 const[iserror,seterror] = useState(false)

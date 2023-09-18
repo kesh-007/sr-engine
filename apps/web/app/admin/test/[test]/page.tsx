@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {FC} from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -18,12 +18,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ui/components/ui/dialog"
+import { useSession } from "next-auth/react"
 
 
 
 const Page = () => {
 
   const departmentCounts = {};
+  const { data: session, status } = useSession()
+  const [_status,_setstatus] = useState(false)
+  useEffect(()=>{
+    if (status === "authenticated") {
+      _setstatus(true)
+    }
+  
+  },[status])
+  
+
 
 data.forEach((person) => {
   const department = person["Branch"];
@@ -206,7 +217,7 @@ doc.save('results.pdf');
             alt='logo'
             />
         </p>
-        <HeaderComponent/>
+       {_status && <HeaderComponent/>}
         <p></p>
         </div>
 <div className='p-4'>
@@ -258,7 +269,7 @@ doc.save('results.pdf');
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {data.slice(0, 5).map((datum, index) => (
-            <tr key={index}>
+            <tr key={datum.Name}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Name}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Branch}</td>
