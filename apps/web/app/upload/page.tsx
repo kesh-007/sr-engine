@@ -54,8 +54,7 @@ const Page = () => {
           />
         </p>
         <HeaderComponent />
-        {/* {JSON.stringify(session)} */}
-        {session.user.name}
+       
         <p></p>
       </div>
       <h1 className="text-2xl font-bold py-3 px-2">Details of the test</h1>
@@ -82,26 +81,18 @@ const Page = () => {
                 </div>
               )}
             />
-            <FormField
-              control={form.control}
-              name="scorefile"
-              render={({ field }) => (
+           
                 <div className="space-y-2">
                   <FormLabel>Coders File</FormLabel>
-                  <Input type="file" {...field} />
+                  <Input type="file"  />
                 </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="absentfile"
-              render={({ field }) => (
+             
+            
                 <div className="space-y-2">
                   <FormLabel>Absentese File</FormLabel>
-                  <Input type="file" {...field} />
+                  <Input type="file"  />
                 </div>
-              )}
-            />
+             
             <Button type="submit">Submit</Button>
           </form>
         </Form>

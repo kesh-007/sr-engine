@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@ui/components/ui/dialog"
 import { useSession } from "next-auth/react"
+import { Input } from '@ui/components/ui/input';
 
 
 
@@ -27,6 +28,7 @@ const Page = () => {
   const departmentCounts = {};
   const { data: session, status } = useSession()
   const [_status,_setstatus] = useState(false)
+  const[count,setcount] = useState(5);
   useEffect(()=>{
     if (status === "authenticated") {
       _setstatus(true)
@@ -250,6 +252,10 @@ doc.save('results.pdf');
 </div>
       <div className='flex flex-col'>
         <p className='mb-2 font-bold text-xl'>Top Performers</p>
+          <Input type='number' onChange={(e)=>setcount(Number(e.target.value))}
+          placeholder='Count...'
+          className='w-1/3 mb-4'
+          />
     <table className=" divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -268,7 +274,7 @@ doc.save('results.pdf');
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data.slice(0, 5).map((datum, index) => (
+          {data.slice(0, count).map((datum, index) => (
             <tr key={datum.Name}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Name}</td>

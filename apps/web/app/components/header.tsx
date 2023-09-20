@@ -20,13 +20,13 @@ const components: { title: string; href: string; description: string }[] = [
     title: "Profile",
     href: "/admin/profile",
     description:
-      "",
+      "To change the password",
   },
   {
     title: "Compare Tests",
     href: "/admin/compare",
     description:
-      "",
+      "Compare any 2 tests ",
   },
   {
     title: "Progress",
