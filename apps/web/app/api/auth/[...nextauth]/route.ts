@@ -27,7 +27,7 @@ const   authOptions = {
     signOut:'/login'
 
   },
-secret: process.env.NEXTAUTH_SECRET ,
+secret: process.env["NEXTAUTH_SECRET"] ,
 
 
   
