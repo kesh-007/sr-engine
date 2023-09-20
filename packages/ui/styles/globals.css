@@ -84,3 +84,18 @@ div{
   font-family: 'Quicksand', sans-serif;
 
 }
+
+/* Style the scrollbar track (the background) */
+::-webkit-scrollbar-track {
+  background: #dfa4a4; /* Change to your desired background color */
+}
+
+/* Style the scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: #ef1e1e; /* Change to your desired thumb color */
+}
+
+/* Style the scrollbar when hovered */
+::-webkit-scrollbar-thumb:hover {
+  background: #e10a0a; /* Change to your desired hover color */
+}

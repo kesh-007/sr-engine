@@ -77,10 +77,167 @@ const mergedData = Object.keys(departmentaCounts).map((department)=>({
   absent:departmentaCounts[department],
 }))
 
+function DeptResults(dept: string) {
+  const data_ = data.filter((key) => key["Branch"] === dept);
+  const absent_ = absent.filter((key) => key["Branch"] === dept);
+
+  const doc = new jsPDF('landscape');
+
+  // Helper function to add heading and subheading
+  function addHeading(heading, subheading) {
+    doc.setFontSize(16);
+    doc.text(heading, 10, yOffset);
+    yOffset += 10;
+
+    doc.setFontSize(12);
+    doc.text(subheading, 10, yOffset);
+    yOffset += 10;
+  }
+
+  let yOffset = 10;
+
+  doc.text(`Dept ${dept}`, 10, yOffset);
+  yOffset += 10;
+
+  // Get unique sections and sort them in ascending order
+  //@ts-ignore
+  const uniqueSections = [...new Set(data_.map((item) => item["Batch/Section"]))];
+  uniqueSections.sort(); // Sort sections in ascending order
+
+  // Iterate over each section in ascending order
+  for (const section of uniqueSections) {
+    // Filter data for the current section
+    const sectionData = data_.filter((item) => item["Batch/Section"] === section);
+
+    // Filter absentData for the current section
+    const sectionAbsentData = absent_.filter((item) => item["Batch/Section"] === section);
+
+    // Add a heading and subheading for the section
+    addHeading(`Section: ${section?section:"Lateral Entry"}`,  `Present: ${sectionData.length}`);
+
+    // Define the table columns
+    const columns = [
+      "Number",
+      "#",
+      "Name",
+      "Regn Num",
+      "Branch",
+      "Solved Count",
+      "Score",
+      "Resume Count",
+      "Active Utilization"
+      // Add other column headers...
+    ];
+
+    // Convert section-specific data into an array of arrays
+    const tableData = sectionData.map((item, index) => {
+      return [
+        index + 1, // Number column
+        item["#"],
+        item["Name"],
+        item["Regn Num"],
+        item["Branch"],
+        item["Solved Count"],
+        item["Score"],
+        item["Resume Count"],
+        item["Active Utilization"],
+        // Add other fields as needed...
+      ];
+    });
+
+    // Generate the main table using JSPDF AutoTable
+    //@ts-ignore
+    doc.autoTable({
+      head: [columns], // Table header
+      body: tableData, // Table rows
+      startY: yOffset + 10, // Start the table below the heading and subheading
+    });
+
+    // Calculate yOffset for the "Absent" table
+    //@ts-ignore
+    const mainTableHeight = doc.autoTable.previous.finalY - yOffset;
+    yOffset += mainTableHeight + 20; // Add extra space between tables
+
+    // Add a heading for the "Absent" table
+    addHeading(`Absent - Section: ${section?section:"Lateral Entry"}`, `Absent: ${sectionAbsentData.length}`);
+
+    // Define the table columns for the "Absent" table
+    const absentColumns = [
+      "Number",
+      "Name",
+      "Regn Num",
+      "Branch",
+      "Solved Count",
+      "Total Submissions",
+    ];
+
+    const absentTableData = sectionAbsentData.map((item, index) => {
+      return [
+        index + 1,
+        item["Name"],
+        item["Regn Num"],
+        item["Branch"],
+        item["Solved Count"],
+        item["Total Submissions"],
+      ];
+    });
+//@ts-ignore
+    doc.autoTable({
+      head: [absentColumns], // Table header
+      body: absentTableData, // Table rows
+      startY: yOffset + 10, // Start the table below the heading and subheading
+    });
+
+    // Update the yOffset for the next section
+    //@ts-ignore
+    yOffset = doc.autoTable.previous.finalY + 10;
+  }
+
+  // Save or display the PDF
+  doc.save(`results-${dept}.pdf`);
+}
 
 
+
+  function GenerateTopPerformers()
+  {
+    const doc =new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Top Performers of daiytest-03-09-23(CSE,IT,AIDS,ECE) 2025 ",10,10)
+    const columns = [
+      "#",
+      "Name",
+      "Regn Num",
+      "Branch",
+      "Batch\/Section",
+      "Solved Count",
+      "Score",
+    ];
+    const tabledata = data.slice(0,count).map((item, index) => {
+      return [
+        item["#"],
+        item["Name"],
+        item["Regn Num"],
+        item["Branch"],
+        item["Batch\/Section"],
+        item["Solved Count"],
+        item["Score"],
+  
+      ];
+    });
+  //@ts-ignore
+    doc.autoTable({
+      head: [columns], // Table header
+      body: tabledata, // Table rows
+      startY:   20, // Start the table below the heading and subheading
+    });
+    doc.save('toppers-list.pdf');
 
   
+  
+
+
+  }
   const generatePDF = () => {
     
     const doc = new jsPDF('landscape');
@@ -251,7 +408,12 @@ doc.save('results.pdf');
 
 </div>
       <div className='flex flex-col'>
+        <div className='flex justify-between px-3'>
         <p className='mb-2 font-bold text-xl'>Top Performers</p>
+        <Button variant='outline'
+        onClick={GenerateTopPerformers}
+        >Export Top Performers</Button>
+        </div>
           <Input type='number' onChange={(e)=>setcount(Number(e.target.value))}
           placeholder='Count...'
           className='w-1/3 mb-4'
@@ -315,8 +477,13 @@ doc.save('results.pdf');
               <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.name}</td>
               <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.present}</td>
               <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-500">{datum.absent}</td>
+              <td>
               <div className='flex justify-center items-center'>
               <Button variant='outline' className='mt-4' onClick={()=>ViewDetails(datum.name)}>View</Button>
+              </div>
+              </td>
+              <div className='flex justify-center items-center'>
+              <Button variant='outline' className='mt-4' onClick={()=>DeptResults(datum.name)}>Export</Button>
               </div>
             </tr>
           ))}

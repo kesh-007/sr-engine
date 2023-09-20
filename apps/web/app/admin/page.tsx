@@ -11,9 +11,9 @@ import { data } from '@/app/components/data';
 const Page = () => {
   const [count,setcount]= useState(5)
   return (
-    <div>
+    <div className='scrollbar '>
         <title>Dashboard || SR Engine</title>
-        <div className='flex justify-between p-4'>
+        <div className='flex justify-between p-4 '>
         <p className='text-2xl poppins-text font-bold'>
 
             <img 
