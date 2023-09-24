@@ -50,9 +50,7 @@ const handleLogin = async (e) => {
     if (!result.error) {
         router.push('/admin')
         
-      // Handle successful login, e.g., redirect to dashboard
     } else {
-      // Handle login error
       console.error(result.error);
       seterror(true)
     }

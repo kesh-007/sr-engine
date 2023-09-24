@@ -1,3 +1,4 @@
+import { loginApi } from "@/server";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -11,12 +12,15 @@ const   authOptions = {
       },
       async authorize(credentials) {
         const { email, password } = credentials;
+       const result= loginApi(email,password)
+       if (result)
+       {
+        return result
+       }
+       else{
+        return null
+       }
 
-        if (email && password==='changeme') {
-          return Promise.resolve({ id: 1, name: email });
-        } else {
-          return Promise.resolve(null);
-        }
       }
     })
   ],

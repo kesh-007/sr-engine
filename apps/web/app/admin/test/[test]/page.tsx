@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import {FC} from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { data } from '@/app/components/data';
-import { absent } from '@/app/components/absent';
+
 import { HeaderComponent } from '@/app/components/header';
 import { DataTableDemo } from '@/app/components/table';
+import { Skeleton } from "@ui/components/ui/skeleton"
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Button } from '@ui/components/ui/button';
 import {
@@ -20,16 +21,48 @@ import {
 } from "@ui/components/ui/dialog"
 import { useSession } from "next-auth/react"
 import { Input } from '@ui/components/ui/input';
+import { TestDetailsApi } from '@/server';
+import { HoverCardDemo } from '@/app/components/Hovercard';
 
-
-
-const Page = () => {
+interface pageProps{
+  test:string
+}
+const Page = ({params}) => {
 
   const departmentCounts = {};
+  const [data,setData] = useState([])
+  const[absent,setAbsent] = useState([])
   const { data: session, status } = useSession()
   const [_status,_setstatus] = useState(false)
+  const [loading,setloading] = useState(false)
+  
+  
   const[count,setcount] = useState(5);
+
+  async function GetResults()
+  {
+    setloading(true)
+    const results= await TestDetailsApi(decodeURIComponent(params.test))
+    console.log( results,"Results")
+    let counter = 1;
+
+const newArray = results.students.map((obj) => ({
+  ...obj,
+  "#": counter++,
+}));
+
+const newArrayA = results.studentAbsents.filter((objA) =>
+  newArray.some((objB) => objB["Branch"] === objA.Branch)
+).map((objA) => ({ ...objA }));
+
+
+    setData(newArray)
+    setAbsent(newArrayA)
+    setloading(false)
+  }
+
   useEffect(()=>{
+ GetResults()
     if (status === "authenticated") {
       _setstatus(true)
     }
@@ -55,7 +88,6 @@ const departmentData = Object.keys(departmentCounts).map((department) => ({
 
 const departmentaCounts = {};
 
-// Loop through the data and count the persons in each department
 absent.forEach((person) => {
   const department = person["Branch"];
   if (departmentCounts[department])
@@ -66,7 +98,6 @@ absent.forEach((person) => {
   }}
 });
 
-// Convert the department counts into the desired format
 const departmentaData = Object.keys(departmentaCounts).map((department) => ({
   name: department,
   dept: departmentaCounts[department],
@@ -99,7 +130,6 @@ function DeptResults(dept: string) {
   doc.text(`Dept ${dept}`, 10, yOffset);
   yOffset += 10;
 
-  // Get unique sections and sort them in ascending order
   //@ts-ignore
   const uniqueSections = [...new Set(data_.map((item) => item["Batch/Section"]))];
   uniqueSections.sort(); // Sort sections in ascending order
@@ -383,21 +413,49 @@ doc.save('results.pdf');
   <div className='flex justify-between max-md:flex-col'>
     <div className='flex flex-col'>
       <p className='mb-2 font-bold text-xl'>
-        dailytest-03-07-23(CSE,IT,AIDS)2025
+        {decodeURIComponent(params.test)}
         <Button onClick={generatePDF} variant='outline' className='ml-1'>
           Export
           </Button>
+          <HoverCardDemo one={data.length} two={absent.length}/>
+
         </p>
-    <BarChart width={730} height={250} data={departmentData} className='max-md:hidden'>
+        {loading &&
+          <div className='flex gap-4'>
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+
+
+      </div>
+
+        }
+{ !loading &&   <BarChart width={730} height={250} data={departmentData} className='max-md:hidden'>
   <CartesianGrid strokeDasharray="3 3" />
   <XAxis dataKey="name" />
   <YAxis />
   <Tooltip />
   <Legend />
   <Bar dataKey="dept" fill="#8884d8" />
-</BarChart>
+</BarChart>}
 <h1 className='font-bold text-xl '>Absent List</h1>
-<BarChart width={730} height={250} data={departmentaData} className='max-md:hidden'>
+{loading &&
+<div className='flex gap-4'>
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+      <Skeleton className="h-[13rem] w-[6rem] rounded-md" />
+
+
+      </div>
+
+        }
+{!loading && <BarChart width={730} height={250} data={departmentaData} className='max-md:hidden'>
   <CartesianGrid strokeDasharray="3 3" />
   <XAxis dataKey="name" />
   <YAxis />
@@ -405,7 +463,7 @@ doc.save('results.pdf');
   <Legend />
   <Bar dataKey="dept" fill="#FF6263" />
 </BarChart>
-
+}
 </div>
       <div className='flex flex-col'>
         <div className='flex justify-between px-3'>
@@ -418,7 +476,19 @@ doc.save('results.pdf');
           placeholder='Count...'
           className='w-1/3 mb-4'
           />
-    <table className=" divide-y divide-gray-200">
+          {loading &&
+          <div className='space-y-4'>
+      <Skeleton className="h-[3rem] w-full rounded-md" />
+      <Skeleton className="h-[3rem] w-full rounded-md" />
+      <Skeleton className="h-[3rem] w-full rounded-md" />
+      <Skeleton className="h-[3rem] w-full rounded-md" />
+      </div>
+
+
+        }
+
+
+    {!loading && <table className=" divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -445,12 +515,11 @@ doc.save('results.pdf');
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>}
     </div>
 
   </div>
   <div className='mt-4'>
-
     
      <table className=" w-full bg-gray-50">
         <thead className="bg-gray-50">
@@ -490,22 +559,26 @@ doc.save('results.pdf');
         </tbody>
       </table>
    
-    {show && <DialogDemo dept={name}/>}
+    {show && <DialogDemo dept={name} data={data} absent={absent}/>}
   </div>
   </div>
+  
 
     </div>
   )
 }
 
 interface DialogDemoProps {
-  dept: string; // Specify the type for the 'dept' prop
+  dept: string;
+  data:any,
+  absent:any
+   // Specify the type for the 'dept' prop
 }
 
 
- function DialogDemo(props:DialogDemoProps) {
-  const result = data.filter((item)=>item.Branch===props.dept)
-  const absents = absent.filter((item)=>item.Branch===props.dept)
+ function DialogDemo(props:DialogDemoProps,) {
+  const result = props.data.filter((item)=>item.Branch===props.dept)
+  const absents = props.absent.filter((item)=>item.Branch===props.dept)
   return (
     <div>
     <h1 className='text-2xl font-bold'>Department {props.dept}</h1>

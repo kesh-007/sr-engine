@@ -6,9 +6,47 @@ import Welcome from '../../assets/undraw_dashboard.svg'
 import Image from 'next/image'
 import { Input } from '@ui/components/ui/input'
 import { data } from '@/app/components/data';
+import { Button } from '@ui/components/ui/button'
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 
 const Page = () => {
+
+  const generatePdf = () => {
+
+    const doc =new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Top Performers",10,10)
+    const columns = [
+      "#",
+      "Name",
+      "Regn Num",
+      "Branch",
+      "Batch\/Section",
+      "Batch",
+    ];
+    const tabledata = data.slice(0,count).map((item, index) => {
+      return [
+        item["#"],
+        item["Name"],
+        item["Regn Num"],
+        item["Branch"],
+        item["Batch\/Section"],
+        item["Batch"],
+  
+      ];
+    });
+  //@ts-ignore
+    doc.autoTable({
+      head: [columns], // Table header
+      body: tabledata, // Table rows
+      startY:   20, // Start the table below the heading and subheading
+    });
+    doc.save('toppers-list.pdf');
+
+
+  }
   const [count,setcount]= useState(5)
   return (
     <div className='scrollbar '>
@@ -45,10 +83,16 @@ const Page = () => {
       <div>
       <div className='flex flex-col'>
         <p className='mb-2 font-bold text-xl'>Top Performers</p>
+        <div className='flex gap-5 px-3'>
+
           <Input type='number' onChange={(e)=>setcount(Number(e.target.value))}
           placeholder='Count...'
           className='w-1/3 mb-4'
           />
+                  <Button onClick={generatePdf} variant='outline'>Export</Button>
+                  </div>
+
+
     <table className=" divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>

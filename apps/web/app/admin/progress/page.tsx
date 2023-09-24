@@ -14,6 +14,8 @@ import Customprogress from '@/app/components/Customprogress'
 
   
 const page = () => {
+
+
   return (
     <div>
         <Navbar/>

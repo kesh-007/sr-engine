@@ -1,7 +1,19 @@
-import React from 'react'
+"use client"
+import React, { useEffect, useState } from 'react'
 import { HeaderComponent } from './header'
+import { useSession } from 'next-auth/react'
 
 const Navbar = () => {
+  const { data: session, status } = useSession()
+  const [_status,_setstatus] = useState(false)
+  useEffect(()=>{
+       if (status === "authenticated") {
+         _setstatus(true)
+       }
+     
+     },[status])
+   
+
   return (
     <div>
          <div>
@@ -14,7 +26,7 @@ const Navbar = () => {
             alt="logo"
           />
         </p>
-        <HeaderComponent />
+        {_status && <HeaderComponent/>}
         <p></p>
       </div>
    

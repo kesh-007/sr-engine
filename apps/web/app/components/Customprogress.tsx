@@ -11,9 +11,6 @@ const Customprogress = () => {
     const [show,setShow] = useState(false)
     const data = progress
 
-  function handleSave(): void {
-    throw new Error('Function not implemented.')
-  }
 
   return (
     <div>
@@ -21,7 +18,7 @@ const Customprogress = () => {
         <div className='mx-[3rem]'>
             <h1 className='mt-3 text-xl font-bold'>Summary Details of Students</h1>
           {data.map((datum)=>(
-                <div key={datum["Regn Num"]} className='w-2/3 flex justify-center flex-col align-center'>
+                <div key={datum["Regn Num"]} className='w-2/3 flex justify-center flex-col align-center mb-2'>  
                 <div className="space-y-1  mt-[1rem]">
                   <h1 className="text-xl font-medium leading-none mb-3"> {datum['Name']}</h1>
                   <div className='flex gap-3'>

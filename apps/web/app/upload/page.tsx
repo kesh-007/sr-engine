@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -15,29 +15,61 @@ import { useToast } from '@ui/components/ui/use-toast';
 import { HeaderComponent } from '../components/header';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { postFormDataApi } from '@/server';
 
 const Page = () => {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession()
+  const [selectedCFile, setSelectedCFile] = useState(null);
+  const [selectedAFile, setSelectedAFile] = useState(null);
+
+
+  const handleCFileSelect = (e) => {
+    const file = e.target.files[0];  
+    setSelectedCFile(file);
+  };
+  const handleAFileSelect = (e) => {
+    const file = e.target.files[0];  
+    setSelectedAFile(file);
+  };
+
 
   const FormSchema = z.object({
     test_name: z.string().min(2, {
       message: 'Username must be at least 2 characters.',
     }),
     url: z.string(),
-    scorefile: z.any(),
-    absentfile:z.any(),
+    
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const formData = new FormData();
+    formData.append('test_name', data.test_name);
+    formData.append('url', data.url);
+    formData.append('codersfile',selectedCFile)
+    formData.append('absentfile',selectedAFile)
+    const reponse = await postFormDataApi(formData)
+    console.log(reponse.message,'idu')
+    if (reponse.message==='Test name already exists')
+    {
+
+      toast({
+        title: 'Test data already exists',
+        description: `${data.test_name} exists`,
+        action: <ToastAction altText="Goto schedule to undo">Exit</ToastAction>,
+      });
+      return;
+      
+    }
+    
     toast({
       title: 'Test data added',
-      description: `${data.scorefile}`,
+      description: `${data.test_name} is added`,
       action: <ToastAction altText="Goto schedule to undo">Exit</ToastAction>,
     });
   }
@@ -84,13 +116,13 @@ const Page = () => {
            
                 <div className="space-y-2">
                   <FormLabel>Coders File</FormLabel>
-                  <Input type="file"  />
+                  <Input type="file" onChange={handleCFileSelect} />
                 </div>
              
             
                 <div className="space-y-2">
                   <FormLabel>Absentese File</FormLabel>
-                  <Input type="file"  />
+                  <Input type="file" onChange={handleAFileSelect} />
                 </div>
              
             <Button type="submit">Submit</Button>

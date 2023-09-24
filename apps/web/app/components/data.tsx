@@ -1086,7 +1086,7 @@ export const data=[
      "Regn Num": 210421104304,
      "Branch": "CSE",
      "Solved Count": 3,
-     "Score": "60\/60",
+     "Score": "60\/60", 
      "Total Submissions": 7,
      "Login": "210421104304@cit",
      "Mentor": "Dr. J. Venkatesh",
