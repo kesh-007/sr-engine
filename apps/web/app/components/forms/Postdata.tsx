@@ -12,12 +12,12 @@ import {
 } from '@ui/components/ui/form';
 import { Input } from '@ui/components/ui/input';
 import { useToast } from '@ui/components/ui/use-toast';
-import { HeaderComponent } from '../components/header';
+import { HeaderComponent } from '../../components/header';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { postFormDataApi } from '@/server';
 
-const Page = () => {
+const PostData = () => {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession()
@@ -75,29 +75,17 @@ const Page = () => {
   }
 
   return (
-    <div>
-      <title>Dashboard || SR Engine</title>
-      <div className="flex justify-between p-4">
-        <p className="text-2xl poppins-text font-bold">
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/kraftcode-6e365.appspot.com/o/images%2Flogo%20(1).png?alt=media&token=e10d1c04-abfa-4bfd-8261-f335206489d7"
-            className="w-[6rem] h-[3rem] object-fill"
-            alt="logo"
-          />
-        </p>
-        <HeaderComponent />
-       
-        <p></p>
-      </div>
-      <h1 className="text-2xl font-bold py-3 px-2">Details of the test</h1>
+    <div className=''>
+      <h1 className="text-4xl font-bold py-4 px-2 max-md:text-2xl max-md:text-center">Details of the test</h1>
       <div className="px-2">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/3 space-y-6 text-lg">
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6 text-lg">
+            <div className='flex gap-10 mx-10 max-md:flex-col '>
             <FormField
               control={form.control}
               name="test_name"
               render={({ field }) => (
-                <div className="space-y-2">
+                <div className="space-y-2 w-1/2 max-md:w-full">
                   <FormLabel>Test Name</FormLabel>
                   <Input placeholder="test name" {...field} />
                 </div>
@@ -107,25 +95,31 @@ const Page = () => {
               control={form.control}
               name="url"
               render={({ field }) => (
-                <div className="space-y-2">
+                <div className="space-y-2 w-1/2 max-md:w-full">
                   <FormLabel>Url</FormLabel>
                   <Input placeholder="url" {...field} />
                 </div>
               )}
             />
-           
-                <div className="space-y-2">
+            </div>
+<div className='flex  gap-10 mx-10 max-md:flex-col'>           
+                <div className="space-y-2 w-1/2 max-md:w-full ">
                   <FormLabel>Coders File</FormLabel>
                   <Input type="file" onChange={handleCFileSelect} />
                 </div>
              
             
-                <div className="space-y-2">
+                <div className="space-y-2 w-1/2 max-md:w-full">
                   <FormLabel>Absentese File</FormLabel>
                   <Input type="file" onChange={handleAFileSelect} />
                 </div>
+                </div>
+                <div className='flex justify-end mx-10'>
+
              
-            <Button type="submit">Submit</Button>
+            <Button type="submit" className=''>Submit</Button>
+                </div>
+
           </form>
         </Form>
       </div>
@@ -133,4 +127,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default PostData;

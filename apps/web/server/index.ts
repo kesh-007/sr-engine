@@ -1,4 +1,4 @@
-const url= 'http://localhost:8000'
+const url= 'http://192.168.137.239:8000'
 
 export const loginApi = async (email:string, password:string) => {
     try {
@@ -79,6 +79,7 @@ export const postFormDataApi = async (formData:FormData) => {
     });
 
     if (!response.ok) {
+      console.log(response,'idu dan da response');
       throw new Error('Network Error');
     }
 

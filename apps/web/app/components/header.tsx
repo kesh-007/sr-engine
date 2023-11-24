@@ -36,7 +36,7 @@ const components: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Upload",
-    href: "/upload",
+    href: "admin/upload",
     description: "Upload the details of the test",
   },
  
@@ -69,9 +69,9 @@ export function HeaderComponent() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <div  onClick={()=>signOut()} className="cursor-pointer" >
+          <div  onClick={()=>signOut()} className="cursor-pointer " >
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Logout
+            <p className="text-gradient_blue-purple !font-bold">  Logout </p>
             </NavigationMenuLink>
           </div>
         </NavigationMenuItem>

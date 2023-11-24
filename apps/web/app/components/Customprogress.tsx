@@ -26,7 +26,7 @@ const Customprogress = () => {
                     Reg Number <span className='font-bold'>{datum["Regn Num"]}</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Branch  <span className='font-bold'>{datum["Branch"]}</span>
+                    Branch  <span className='!font-bold'>{datum["Branch"]}</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Section <span className='font-bold'>{datum["Batch\/Section"]}</span>
@@ -73,6 +73,7 @@ const Customprogress = () => {
 
 
                 </div>
+                <div className='h-5'/>
 
                 
               </div>

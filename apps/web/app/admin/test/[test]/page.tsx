@@ -1,32 +1,20 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import {FC} from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
 import { HeaderComponent } from '@/app/components/header';
 import { DataTableDemo } from '@/app/components/table';
 import { Skeleton } from "@ui/components/ui/skeleton"
-
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Button } from '@ui/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@ui/components/ui/dialog"
 import { useSession } from "next-auth/react"
 import { Input } from '@ui/components/ui/input';
 import { TestDetailsApi } from '@/server';
 import { HoverCardDemo } from '@/app/components/Hovercard';
+import { TabsDemo } from '@/app/components/Tabs';
+import { CustomSheet } from '@/app/components/Sheet';
 
-interface pageProps{
-  test:string
-}
+
 const Page = ({params}) => {
 
   const departmentCounts = {};
@@ -35,9 +23,8 @@ const Page = ({params}) => {
   const { data: session, status } = useSession()
   const [_status,_setstatus] = useState(false)
   const [loading,setloading] = useState(false)
-  
-  
   const[count,setcount] = useState(5);
+  const[solvedcount,setsolvedcount] = useState([])
 
   async function GetResults()
   {
@@ -58,6 +45,25 @@ const newArrayA = results.studentAbsents.filter((objA) =>
 
     setData(newArray)
     setAbsent(newArrayA)
+    const studentsByProgramCount = {};
+
+newArray.forEach((student) => {
+  const solvedCount = parseInt(student["Solved Count"], 10); 
+
+  if (!isNaN(solvedCount)) {
+    if (!studentsByProgramCount[solvedCount]) {
+      studentsByProgramCount[solvedCount] = [];
+    }
+    studentsByProgramCount[solvedCount].push(student);
+  }
+});
+const ResultArray = Object.keys(studentsByProgramCount).map((key) => ({
+  key: parseInt(key, 10),
+  value: studentsByProgramCount[key],
+}));
+
+setsolvedcount(ResultArray)
+
     setloading(false)
   }
 
@@ -80,13 +86,11 @@ data.forEach((person) => {
   }
 });
 
-// Convert the department counts into the desired format
-const departmentData = Object.keys(departmentCounts).map((department) => ({
-  name: department,
-  dept: departmentCounts[department],
-}));
+
+
 
 const departmentaCounts = {};
+
 
 absent.forEach((person) => {
   const department = person["Branch"];
@@ -98,23 +102,81 @@ absent.forEach((person) => {
   }}
 });
 
-const departmentaData = Object.keys(departmentaCounts).map((department) => ({
+const filteredData1 = absent.filter((person) => {
+  const department = person["Branch"];
+  return departmentCounts[department] > departmentaCounts[department];
+});
+const remainingData = data.filter((person) => {
+  const department = person["Branch"];
+  return departmentCounts[department] >= departmentaCounts[department];
+});
+
+console.log("Filtered data",filteredData1)
+const daCounts= {}
+filteredData1.forEach((person) => {
+  const department = person["Branch"];
+  
+  if (daCounts[department])
+ { 
+    daCounts[department]++;
+  } else {
+    daCounts[department] = 1;
+  }
+});
+
+
+const dpCounts= {}
+remainingData.forEach((person) => {
+  const department = person["Branch"];
+  
+  if (dpCounts[department])
+ { 
+    dpCounts[department]++;
+  } else {
+    dpCounts[department] = 1;
+  }
+});
+const departmentData = Object.keys(dpCounts).map((department) => ({
+  name: department,
+  dept: departmentCounts[department],
+}));
+
+console.log("Da coins",daCounts);
+const departmentaData = Object.keys(daCounts).map((department) => ({
   name: department,
   dept: departmentaCounts[department],
 }));
-const mergedData = Object.keys(departmentaCounts).map((department)=>({
+
+
+
+
+
+
+
+
+const filteredData = data.filter((person) => {
+  const department = person["Branch"];
+  return departmentCounts[department] < departmentaCounts[department];
+});
+
+
+console.log("Data \n \n \n",filteredData[0])
+
+
+
+
+const mergedData = Object.keys(daCounts).map((department)=>({
   name:department,
   present:departmentCounts[department],
   absent:departmentaCounts[department],
 }))
 
 function DeptResults(dept: string) {
-  const data_ = data.filter((key) => key["Branch"] === dept);
-  const absent_ = absent.filter((key) => key["Branch"] === dept);
+  const data_ = remainingData.filter((key) => key["Branch"] === dept);
+  const absent_ = filteredData1.filter((key) => key["Branch"] === dept);
 
   const doc = new jsPDF('landscape');
 
-  // Helper function to add heading and subheading
   function addHeading(heading, subheading) {
     doc.setFontSize(16);
     doc.text(heading, 10, yOffset);
@@ -132,20 +194,15 @@ function DeptResults(dept: string) {
 
   //@ts-ignore
   const uniqueSections = [...new Set(data_.map((item) => item["Batch/Section"]))];
-  uniqueSections.sort(); // Sort sections in ascending order
+  uniqueSections.sort(); 
 
-  // Iterate over each section in ascending order
   for (const section of uniqueSections) {
-    // Filter data for the current section
     const sectionData = data_.filter((item) => item["Batch/Section"] === section);
 
-    // Filter absentData for the current section
     const sectionAbsentData = absent_.filter((item) => item["Batch/Section"] === section);
 
-    // Add a heading and subheading for the section
     addHeading(`Section: ${section?section:"Lateral Entry"}`,  `Present: ${sectionData.length}`);
 
-    // Define the table columns
     const columns = [
       "Number",
       "#",
@@ -156,7 +213,6 @@ function DeptResults(dept: string) {
       "Score",
       "Resume Count",
       "Active Utilization"
-      // Add other column headers...
     ];
 
     // Convert section-specific data into an array of arrays
@@ -171,27 +227,22 @@ function DeptResults(dept: string) {
         item["Score"],
         item["Resume Count"],
         item["Active Utilization"],
-        // Add other fields as needed...
       ];
     });
 
-    // Generate the main table using JSPDF AutoTable
     //@ts-ignore
     doc.autoTable({
-      head: [columns], // Table header
-      body: tableData, // Table rows
-      startY: yOffset + 10, // Start the table below the heading and subheading
+      head: [columns],
+      body: tableData,
+      startY: yOffset + 10,
     });
 
-    // Calculate yOffset for the "Absent" table
     //@ts-ignore
     const mainTableHeight = doc.autoTable.previous.finalY - yOffset;
-    yOffset += mainTableHeight + 20; // Add extra space between tables
+    yOffset += mainTableHeight + 20; 
 
-    // Add a heading for the "Absent" table
     addHeading(`Absent - Section: ${section?section:"Lateral Entry"}`, `Absent: ${sectionAbsentData.length}`);
 
-    // Define the table columns for the "Absent" table
     const absentColumns = [
       "Number",
       "Name",
@@ -213,17 +264,15 @@ function DeptResults(dept: string) {
     });
 //@ts-ignore
     doc.autoTable({
-      head: [absentColumns], // Table header
-      body: absentTableData, // Table rows
-      startY: yOffset + 10, // Start the table below the heading and subheading
+      head: [absentColumns],
+      body: absentTableData,
+      startY: yOffset + 10, 
     });
 
-    // Update the yOffset for the next section
     //@ts-ignore
     yOffset = doc.autoTable.previous.finalY + 10;
   }
 
-  // Save or display the PDF
   doc.save(`results-${dept}.pdf`);
 }
 
@@ -233,7 +282,7 @@ function DeptResults(dept: string) {
   {
     const doc =new jsPDF();
     doc.setFontSize(14);
-    doc.text("Top Performers of daiytest-03-09-23(CSE,IT,AIDS,ECE) 2025 ",10,10)
+    doc.text(`${params.test}`,10,10)
     const columns = [
       "#",
       "Name",
@@ -243,7 +292,7 @@ function DeptResults(dept: string) {
       "Solved Count",
       "Score",
     ];
-    const tabledata = data.slice(0,count).map((item, index) => {
+    const tabledata = remainingData.slice(0,count).map((item, index) => {
       return [
         item["#"],
         item["Name"],
@@ -257,9 +306,9 @@ function DeptResults(dept: string) {
     });
   //@ts-ignore
     doc.autoTable({
-      head: [columns], // Table header
-      body: tabledata, // Table rows
-      startY:   20, // Start the table below the heading and subheading
+      head: [columns], 
+      body: tabledata, 
+      startY:   20,
     });
     doc.save('toppers-list.pdf');
 
@@ -272,7 +321,6 @@ function DeptResults(dept: string) {
     
     const doc = new jsPDF('landscape');
 
-// Helper function to add heading and subheading
 function addHeading(heading, subheading) {
   doc.setFontSize(16);
   doc.text(heading, 10, yOffset);
@@ -285,19 +333,14 @@ function addHeading(heading, subheading) {
 
 let yOffset = 10;
 
-// Iterate over each branch
 //@ts-ignore
 for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
-  // Filter data for the current branch
-  const branchData = data.filter((item) => item["Branch"] === branch);
+  const branchData = remainingData.filter((item) => item["Branch"] === branch);
 
-  // Filter absentData for the current branch
-  const branchAbsentData = absent.filter((item) => item["Branch"] === branch);
+  const branchAbsentData = filteredData1.filter((item) => item["Branch"] === branch);
 
-  // Add a heading and subheading for the branch
   addHeading(`Branch: ${branch}`,  `Present: ${branchData.length}`);
 
-  // Define the table columns
   const columns = [
     "Number",
     "#",
@@ -308,13 +351,11 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
     "Score",
     "Resume Count",
     "Active Utilization"
-    // Add other column headers...
   ];
 
-  // Convert branch-specific data into an array of arrays
   const tableData = branchData.map((item, index) => {
     return [
-      index + 1, // Number column
+      index + 1, 
       item["#"],
       item["Name"],
       item["Regn Num"],
@@ -324,27 +365,22 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
       item["Resume Count"],
       item["Active Utilization"],
 
-      // Add other fields as needed...
     ];
   });
 
-  // Generate the main table using JSPDF AutoTable
   //@ts-ignore
   doc.autoTable({
-    head: [columns], // Table header
-    body: tableData, // Table rows
-    startY: yOffset + 10, // Start the table below the heading and subheading
+    head: [columns], 
+    body: tableData, 
+    startY: yOffset + 10, 
   });
 
-  // Calculate yOffset for the "Absent" table
   //@ts-ignore
   const mainTableHeight = doc.autoTable.previous.finalY - yOffset;
-  yOffset += mainTableHeight + 20; // Add extra space between tables
+  yOffset += mainTableHeight + 20;
 
-  // Add a heading for the "Absent" table
   addHeading(`Absent - Branch: ${branch}`, `Absent: ${branchAbsentData.length}`);
 
-  // Define the table columns for the "Absent" table
   const absentColumns = [
     "Number",
     
@@ -371,12 +407,11 @@ for (const branch of [...new Set(data.map((item) => item["Branch"]))]) {
 
   //@ts-ignore
   doc.autoTable({
-    head: [absentColumns], // Table header
-    body: absentTableData, // Table rows
-    startY: yOffset + 10, // Start the table below the heading and subheading
+    head: [absentColumns], 
+    body: absentTableData, 
+    startY: yOffset + 10,
   });
 
-  // Update the yOffset for the next section
   //@ts-ignore
   yOffset = doc.autoTable.previous.finalY + 10;
 }
@@ -417,7 +452,7 @@ doc.save('results.pdf');
         <Button onClick={generatePDF} variant='outline' className='ml-1'>
           Export
           </Button>
-          <HoverCardDemo one={data.length} two={absent.length}/>
+          <HoverCardDemo one={remainingData.length} two={filteredData1.length}/>
 
         </p>
         {loading &&
@@ -506,7 +541,7 @@ doc.save('results.pdf');
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data.slice(0, count).map((datum, index) => (
+          {remainingData.slice(0, count).map((datum, index) => (
             <tr key={datum.Name}>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{datum.Name}</td>
@@ -516,7 +551,35 @@ doc.save('results.pdf');
           ))}
         </tbody>
       </table>}
+      <CustomSheet
+  title="Additional Students"
+  description="The following students asked for test keys from others "
+  buttonText="Close"
+  trigger={<Button variant='outline' onClick={()=>{}}>Additional Students</Button>
+}
+>
+<div>
+  {
+    filteredData.map((data)=>(
+      <div>
+        <p><strong>Name</strong>:{data["Name"]}</p>
+        <p><strong>Reg Num</strong>: {data["Regn Num"]}</p>
+        <p><strong>Branch</strong>:{data["Branch"]}</p>
+        <p><strong>Section</strong>: {data["Batch\/Section"]}</p>
+        <p><strong>Score</strong>: {data["Score"]}</p>
+        <p><strong>Submissions</strong>: {data["Total Submissions"]}</p>
+        <hr className='my-3'/>
+        </div>
+    ))
+  }
+
+</div>
+</CustomSheet>
+
     </div>
+
+  </div>
+  <div className='mt-4'>
 
   </div>
   <div className='mt-4'>
@@ -562,6 +625,8 @@ doc.save('results.pdf');
     {show && <DialogDemo dept={name} data={data} absent={absent}/>}
   </div>
   </div>
+  <TabsDemo values={solvedcount}/>
+
   
 
     </div>

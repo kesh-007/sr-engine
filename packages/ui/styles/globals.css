@@ -1,7 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Poppins:wght@300;400;500;700&family=Quicksand:wght@400;700&family=Roboto:wght@300;500;700&family=Space+Mono&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -77,25 +78,60 @@
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Open+Sans&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,700;1,100;1,200&family=Quicksand:wght@400;700&family=Roboto:wght@300;500;700&display=swap');
 
 
 div{
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Space Mono', monospace;
+
 
 }
 
-/* Style the scrollbar track (the background) */
+
+::-webkit-scrollbar {
+  width: .5em;
+}
 ::-webkit-scrollbar-track {
-  background: #dfa4a4; /* Change to your desired background color */
-}
+  background:hsl(120, 50%, 50%/1);
+  border-radius: 100vw;
 
-/* Style the scrollbar thumb (the draggable part) */
+  margin-block:.5em;
+}
 ::-webkit-scrollbar-thumb {
-  background: #ef1e1e; /* Change to your desired thumb color */
+  background:rgba(211, 211, 211, 0.116);
+  border-radius: 100vw;
+  border: .25em solid hsl(120, 25%, 50%/1);
+  
+
 }
 
-/* Style the scrollbar when hovered */
-::-webkit-scrollbar-thumb:hover {
-  background: #e10a0a; /* Change to your desired hover color */
+.text-gradient_purple-blue {
+  background: linear-gradient(90deg, #4c73ff 0%, #73e0f8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.gradient_blue-purple {
+  background: linear-gradient(90deg, #4ca5ff 0%, #b573f8 100%);
+}
+
+.text-gradient_blue {
+  background: linear-gradient(90deg, #4c73ff 2.34%, #389bff 100.78%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.gradient_purple {
+  background: linear-gradient(90deg, #854cff 0%, #b573f8 100%);
+}
+
+.text-gradient_blue-purple {
+  background: linear-gradient(90deg, #4ca5ff 0%, #b573f8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }

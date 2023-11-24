@@ -18,7 +18,6 @@ const page = () => {
 
   return (
     <div>
-        <Navbar/>
         <div className='flex gap-4'>
         <Select>
       <SelectTrigger className="w-[180px]">
@@ -45,7 +44,7 @@ const page = () => {
           <SelectItem value="banana">AIDS</SelectItem>
           <SelectItem value="blueberry">BME</SelectItem>
           <SelectItem value="grapes">Civil</SelectItem>
-          <SelectItem value="grapes">Mech</SelectItem>
+          <SelectItem value="nose">Mech</SelectItem>
 
         </SelectGroup>
       </SelectContent>
@@ -53,6 +52,7 @@ const page = () => {
     </div>
     <div>
       <Customprogress/>
+      
 
           </div>
 

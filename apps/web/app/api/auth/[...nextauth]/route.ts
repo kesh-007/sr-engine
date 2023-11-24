@@ -13,6 +13,7 @@ const   authOptions = {
       async authorize(credentials) {
         const { email, password } = credentials;
        const result= loginApi(email,password)
+       
        if (result)
        {
         return result
